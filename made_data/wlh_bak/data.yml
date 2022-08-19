@@ -1,0 +1,7 @@
+-
+  url_login: http://192.168.1.127:9995/USERCENTER/gateway2
+  url_cut: http://192.168.1.127:9997/AKCOMEMES/waferSlicingModule/waferSlicingIndexModule
+  username: WLH001
+  password: 123456
+  woCode: WO202202280001
+  si_code: Y-1.220304.001
