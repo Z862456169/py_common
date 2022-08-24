@@ -71,7 +71,7 @@ class Base(object):
         # 操作数据库获取整片十进制码
         ten_wafer_no = []
         for wafer_no in whole_wafer_no_list:
-            sql = "SELECT ENTIRE_DECIMAL_CODE FROM MESAKCOMEDEV.MC_BASE_WAFER_INFO WHERE PARENT_ID IN (SELECT ID FROM MESAKCOMEDEV.MC_BASE_WAFER_INFO WHERE WAFER_NO IN ('%s'))" % wafer_no
+            sql = "SELECT ENTIRE_DECIMAL_CODE,WAFER_NO FROM MESAKCOMEDEV.MC_BASE_WAFER_INFO WHERE PARENT_ID IN (SELECT ID FROM MESAKCOMEDEV.MC_BASE_WAFER_INFO WHERE WAFER_NO IN ('%s'))" % wafer_no
             con = ConnectOracle()
             decimal_code = con.connect_oracle(sql)
             ten_wafer_no.append(decimal_code)
