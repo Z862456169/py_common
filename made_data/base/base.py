@@ -1,8 +1,8 @@
 import requests
 import json
-from smz.made_data.base.getticket import get_ticket
+from getticket import get_ticket
 import urllib.parse
-from smz.made_data.base.connect_oracle import ConnectOracle
+from connect_oracle import ConnectOracle
 import datetime
 
 
@@ -23,21 +23,24 @@ class Base(object):
         '''
         url = self.ip_port + '/api/mesakcometest/cut/wafer/manage/check/in'
         data_body = {
-            "woId": "HEE1UTD54LK57D3DDU6M7B4J6BQAIRGQ",
-            "woCode": "WO202202280001",
-            "waferCode": "Y-1",
+            "woId": "GCQGTIBCFM3KD43ATMN3ETQD2EH7E3P5",
+            "woCode": "WO202208240001",
+            "waferCode": "GPWL-01",
             "waferSpec": "210硅片",
             "siliconWaferLotNo": "",
-            "eqpCode": "切片机001", "carrierSn": "LH01",
+            "eqpCode": "切片机001",
+            "carrierSn": "LH01",
             "totalQty": "2",
             "waferSizeName": "对角线:200mm边长:156*156mm",
-            "waferId": "449703427eed4e8598ca8f14e869142a",
-            "siliconWaferLotList": ["Y-1.220304.001"],
-            "requestId": "URBSV2L6T4LM7SJBVLS7CDBGSD973P41"
+            "waferId": "5f11042dcb7b48c299818f2a18e4bafa",
+            "siliconWaferLotList": [
+                "GPWL-01.220824.002"
+            ],
+            "requestId": "ER6FUCSEL77MMU0371KDQA6OUSA8SKNB"
         }
         r = requests.post(url=url, headers=self.headers, json=data_body)
         response_dict = json.loads(r.text)
-        # print('cut_wafer:', response_dict)
+        print('cut_wafer:', response_dict)
         assert response_dict.get('msg') == "成功"
         return response_dict.get('msg')
 
@@ -46,7 +49,6 @@ class Base(object):
         获取整片wafer的十进制码
         :return: list 整片wafer十进制码, [No1, No2]
         '''
-
         # 获取最新的切片信息
         cut_url_value = '{"woCode":"","siliconWaferLotNo":"","carrierSn":"","finishFlag":"N","pageSize":15,"pageNo":1,"requestId":"COHDM8DU5L6MHRVFGBM2OD15B5MJVRU1"}'
         cut_url_byte = urllib.parse.quote(cut_url_value)  # 将字符串进行url编码
@@ -74,10 +76,10 @@ class Base(object):
             decimal_code = con.connect_oracle(sql)
             ten_wafer_no.append(decimal_code)
             # print('get_whole_wafer:', decimal_code)
-        # print('get_whole_wafer_list:', ten_wafer_no)
+        print('get_whole_wafer_list:', ten_wafer_no)
         return [ten_wafer_no[0][0][0], ten_wafer_no[0][1][0], ten_wafer_no[1][0][0], ten_wafer_no[1][1][0]]
 
-    def get_cassette(self):
+    def get_cassette_old(self):
         '''
         获取cassette编号
         :return: list cassette编号 [No1, No2, No3]
@@ -125,6 +127,115 @@ class Base(object):
         # print('cassette_code:', cassette_code)
         return sorted([cassette_code[0][0], cassette_code[1][0], cassette_code[2][0], cassette_code[3][0]])
 
+    def get_cassette(self):
+        '''
+        获取cassette编号
+        :return: list cassette编号 [No1, No2, No3]
+        '''
+        # 新增cassette
+        cassette_url = self.ip_port + '/api/mesbasicakcometest/toolingBackUp/batchSave'
+        data_body = {
+            "toolingParamList": [
+                {
+                    "createBy": "afb2463a6bf740dab2aaa5e03d136870",
+                    "createDate": "2022-08-24T05:36:58.000+0000",
+                    "updateBy": "afb2463a6bf740dab2aaa5e03d136870",
+                    "updateDate": "2022-08-24T05:36:58.000+0000",
+                    "delFlag": "0",
+                    "ctlparamType": "Life",
+                    "durationFlag": "N",
+                    "usagecntFlag": "Y",
+                    "usagecntStd": 999,
+                    "usagecntMin": 998,
+                    "usagecntMax": 999,
+                    "usagecntAlm": 998,
+                    "usagecntUnit": "Wafer",
+                    "verNo": 0,
+                    "ctlparamTypeName": "使用寿命",
+                    "usagecntUsed": 999
+                },
+                {
+                    "createBy": "afb2463a6bf740dab2aaa5e03d136870",
+                    "createDate": "2022-08-24T05:36:58.000+0000",
+                    "updateBy": "afb2463a6bf740dab2aaa5e03d136870",
+                    "updateDate": "2022-08-24T05:36:58.000+0000",
+                    "delFlag": "0",
+                    "ctlparamType": "PM",
+                    "durationFlag": "N",
+                    "usagecntFlag": "N",
+                    "verNo": 0,
+                    "ctlparamTypeName": "保养"
+                },
+                {
+                    "createBy": "afb2463a6bf740dab2aaa5e03d136870",
+                    "createDate": "2022-08-24T05:36:58.000+0000",
+                    "updateBy": "afb2463a6bf740dab2aaa5e03d136870",
+                    "updateDate": "2022-08-24T05:36:58.000+0000",
+                    "delFlag": "0",
+                    "ctlparamType": "Clean",
+                    "durationFlag": "N",
+                    "usagecntFlag": "N",
+                    "verNo": 0,
+                    "ctlparamTypeName": "清洗周期"
+                }
+            ],
+            "tooling": {
+                "typeName": "花篮类别",
+                "toolingKindName": "cassette",
+                "toolingQty": 1,
+                "singletonFlag": "Y",
+                "id": "",
+                "delFlag": "0",
+                "toolingSn": "",
+                "toolingName": "花篮",
+                "toolingKind": "Tooling",
+                "toolingtypeId": "34b1af2833074a7fbfd0e368f85cc363",
+                "toolingcatId": "698b64d650764bf0b8cd6ca7145c07bc",
+                "toolingcatCode": "HL",
+                "toolingcatName": "花篮",
+                "model": "",
+                "toolingcatDesc": "HL",
+                "toolingState": "Normal",
+                "availableFlag": "Y",
+                "toolingUom": "2fab2c28b3fa4c0fbe546a8f347c315f",
+                "toolingUomname": "片",
+                "toolingDesc": "",
+                "activeFlag": "I",
+                "mtlgroupId": "",
+                "mtlgroupNo": "",
+                "mtllocId": "",
+                "num": "4",
+                "snPrefix": "HL",
+                "activityDesc": ""
+            },
+            "toolingAttrList": [],
+            "requestId": "SAV8J7TKOI7QA9VV8EAP9S6LST70BEC4"
+        }
+        r = requests.post(url=cassette_url, headers=self.headers, json=data_body)
+        response_dict = json.loads(r.text)
+        assert response_dict.get('msg') == '保存成功'
+        cassette_ids = response_dict.get('data')
+        # print('cassette_ids:', cassette_ids)
+
+        # 启用cassette
+        start_using_url = self.ip_port + '/api/mesbasicakcometest/toolingBackUp/updateActiveFlagByIds'
+        data_body_using = {
+            "activeFlag": "Y",
+            "ids": cassette_ids,
+            "requestId": "2MGUCBV8VN1HQ3CT10N26OD6LEGMO62N"
+        }
+        r_using = requests.post(url=start_using_url, headers=self.headers, json=data_body_using)
+        response_dict_using = json.loads(r_using.text)
+        assert response_dict_using.get('msg') == '%s条信息已更新' % len(cassette_ids)
+
+        # 获取载具编号
+        sql = "SELECT TOOLING_SN FROM MESAKCOMEDEV.MC_MTM_TOOLING WHERE ID IN ('%s', '%s', '%s', '%s') " % tuple(
+            cassette_ids)
+        con = ConnectOracle()
+        cassette_code = con.connect_oracle(sql)
+        # print('cassette_code:', cassette_code)
+        return sorted([cassette_code[0][0], cassette_code[1][0], cassette_code[2][0], cassette_code[3][0]])
+
     def main(self):
         '''
         主执行
@@ -159,7 +270,7 @@ class Mes(Base):
         # print('whole_decimal_code:', self.whole_decimal_code)
         return self.whole_decimal_code
 
-    def cut_wafer_leave(self, eqp_code='切片机001', wo_code='WO202202280001', carrier_sn='HL-s322', qty='2',
+    def cut_wafer_leave(self, eqp_code='切片机001', wo_code='WO202208240001', carrier_sn='HL-s322', qty='2',
                         wafer_list=None):
         '''
         切片出花篮，产出登记，投片
@@ -184,7 +295,7 @@ class Mes(Base):
         assert response_dict.get('msg') == '成功'
         return response_dict.get('msg')
 
-    def check_or_out(self, proc_id='CLN', carrier_sn='HL-s551', eqp_code='zrj001', wo_code='WO202202280001',
+    def check_or_out(self, proc_id='CLN', carrier_sn='HL-s551', eqp_code='zrj001', wo_code='WO202208240001',
                      action_view='CheckIn',
                      recipe='test_zr', recipe_ver='3.22', qty='4', wafer_list=None):
         '''
@@ -427,4 +538,4 @@ if __name__ == '__main__':
     for _ in range(1):
         m = Mes()
         # 请输入：STC、CLN、CVD、PVD、SPT中的制程号
-        m.run(proc_id='STC')
+        m.run(proc_id='CLN')
